@@ -105,3 +105,4 @@ PixScheduleStatusChangeEvent -> Super.Pix.Payment.PixScheduleStatusChangeEvent
 
 
 http://prod-2.superdigital.com/arq-config-server/pagar-contas-ss.yaml
+insert a new line
