@@ -1,0 +1,107 @@
+ail: MassTransit.Messages[0]
+      R-FAULT rabbitmq://b-9b820d3e-44da-4a29-8d09-bbfab16fec7c.mq.sa-east-1.amazonaws.com:5671/Super.Pix.Payment.GetJdPaymentStatusCommand cc320000-e424-5eb2-bd64-08db7bb18305 Super.Pix.Payment.Contract.Command.GetJdPaymentStatusCommand Super.GlobalPlatform.Pix.Payments.Infrastructure.MessageBus.GetJdPaymentStatusCommandConsumer(00:00:00.0014718) Exception of type 'System.OutOfMemoryException' was thrown.
+System.OutOfMemoryException: Exception of type 'System.OutOfMemoryException' was thrown.
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Object[] arguments, Signature sig, Boolean constructor, Boolean wrapExceptions)
+   at System.Reflection.RuntimeConstructorInfo.Invoke(BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite scopedCallSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitIEnumerable(IEnumerableCallSite enumerableCallSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite scopedCallSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitConstructor(ConstructorCallSite constructorCallSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitScoped(ScopedCallSite scopedCallSite, ServiceProviderEngineScope scope)
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService[T](IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ApiClientServiceCollectionExtensions.<>c__DisplayClass0_0`1.<AddApiClient>b__0(HttpClient client)
+   at Microsoft.Extensions.Http.DefaultHttpClientFactory.CreateClient(String name)
+   at Microsoft.Extensions.DependencyInjection.HttpClientBuilderExtensions.<>c__DisplayClass12_0`1.<AddTypedClient>b__0(IServiceProvider s)
+   at lambda_method(Closure , ServiceProviderEngineScope )
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService[T](IServiceProvider provider)
+   at MassTransit.ExtensionsDependencyInjectionIntegration.ScopeProviders.DependencyInjectionConsumerScopeProvider.MassTransit.Scoping.IConsumerScopeProvider.GetScope[TConsumer,T](ConsumeContext`1 context)
+   at MassTransit.Scoping.ScopeConsumerFactory`1.Send[TMessage](ConsumeContext`1 context, IPipe`1 next)
+   at MassTransit.Pipeline.Filters.ConsumerMessageFilter`2.GreenPipes.IFilter<MassTransit.ConsumeContext<TMessage>>.Send(ConsumeContext`1 context, IPipe`1 next)
+   at MassTransit.Pipeline.Filters.ConsumerMessageFilter`2.GreenPipes.IFilter<MassTransit.ConsumeContext<TMessage>>.Send(ConsumeContext`1 context, IPipe`1 next)
+   at GreenPipes.Filters.RetryFilter`1.GreenPipes.IFilter<TContext>.Send(TContext context, IPipe`1 next)
+   at GreenPipes.Filters.RetryFilter`1.GreenPipes.IFilter<TContext>.Send(TContext context, IPipe`1 next)
+   at MassTransit.Pipeline.Filters.ConcurrencyLimit.ConsumeConcurrencyLimitFilter`1.Send(ConsumeContext`1 context, IPipe`1 next)
+   at GreenPipes.Filters.RetryFilter`1.GreenPipes.IFilter<TContext>.Send(TContext context, IPipe`1 next)
+
+
+
+   aws ec2 describe-instances — output text — query “Reservations[*].Instances[*].[InstanceId, InstanceType, State.Name, Placement.AvailabilityZone, PrivateIpAddress, PrivateDnsName, PublicDnsName, [Tags[?Key==`Name`].Value] [0][0]]”
+
+
+aws ec2 describe-instances \
+--filters Name=instance-state-name \
+--query 'Reservations[*].Instances[*].{Name:Tags[?Key==`Name`]|[0].Value,Instance:InstanceId,Type:InstanceType,State.Name,PrivateIpAddress,PublicDnsName}' \
+--output text >> instances2.csv
+
+
+
+aws ec2 describe-instances \
+    --query 'Reservations[*].Instances[*].{Instance:InstanceId,InstanceType:InstanceType,Subnet:SubnetId,PrivateIP:PrivateIpAddress,PublicIP:PublicIpAddress,PrivateDNS:PrivateDnsName,StateName:State.Name,LaunchTime:LaunchTime}' \
+    --output text >> instances4.csv
+
+
+
+aws ec2 describe-instances \
+    --instance-ids i-0b7521df6d6a605eb
+
+
+
+
+
+#filtro por instancias com a tag producao
+aws ec2 describe-instances \
+    --filters "Name=tag:environment,Values=producao"
+
+#coletar dados das EC2 com vários campos, inclusive tag
+    aws ec2 describe-instances \
+    --query 'Reservations[*].Instances[*].{Instance:InstanceId,InstanceType:InstanceType,LaunchTime:LaunchTime,PrivateIpAddress:PrivateIpAddress,PublicIpAddress:PublicIpAddress,State:State.Name,VpcId:VpcId,SubnetId:SubnetId,Tags:Tags[?Key==`environment`]|[0].Value,Name:Tags[?Key==`Name`]|[0].Value}' \
+        --output table > aws_ec2_data_0310.csv
+
+
+aws acm list-certificates \
+    --query 'CertificateSummaryList[*].{DomainName:DomainName,Status:Status,InUse:InUse,RenewalEligibility:RenewalEligibility,CreatedAt:CreatedAt,ImportedAt:ImportedAt,NotAfter:NotAfter}' \
+    --output table > aws_acm.csv
+
+
+
+
+curl -v --location --request POST 'http://prod-2.superdigital.com/api/v2/teds/00/aprovacao' --header 'Content-Type: application/json' --data-raw '{"ContaCorrenteID":9999999,"Aprovado":true,"ID":00,"LancamentoCreditoId":9357097306,"LancamentoDebitoId":9357097305,"CriadoEm":"0001-01-01T02:00:00Z","CodigoSistemaLegado":"SUPER","NumeroOperacaoSistemaLegado":"","CodigoSituacaoMensagem":"1","StatusId":6,"NumeroControle":"STR20190930190300000","AgenciaDebitada":"0102","TipoContaDebitada":"1","ContaDebitada":"010203","TipoPessoaDebitada":"2","CnpjCpfClienteDebitado": “99999999999”,"NomeClienteDebitado":"Zé da Silva","IspbInstituicaoFinanceiraCreditada":“99999999”,"AgenciaCreditada":null,"TipoContaCreditada":"3","ContaCreditada":“99999999”,"TipoPessoaCreditada":"1","CnpjCpfClienteCreditado": “99999999999”,"NomeClienteCreditado":"dev_Ana Paula Cunha Juliao","ValorLancamento":120000.00,"FinlddCli":"10","DataMovimento":"2019-09-30","DataHoraMensagem":"2019-05-31T13:59:57"}'
+
+
+curl -v --location --request POST 'http://localhost/api/v2/teds/00/aprovacao' --header 'Content-Type: application/json' --data-raw '{"ContaCorrenteID":9999999,"Aprovado":true,"ID":00,"LancamentoCreditoId":9357097306,"LancamentoDebitoId":9357097305,"CriadoEm":"0001-01-01T02:00:00Z","CodigoSistemaLegado":"SUPER","NumeroOperacaoSistemaLegado":"","CodigoSituacaoMensagem":"1","StatusId":6,"NumeroControle":"STR20190930190300000","AgenciaDebitada":"0102","TipoContaDebitada":"1","ContaDebitada":"010203","TipoPessoaDebitada":"2","CnpjCpfClienteDebitado": “99999999999”,"NomeClienteDebitado":"Zé da Silva","IspbInstituicaoFinanceiraCreditada":“99999999”,"AgenciaCreditada":null,"TipoContaCreditada":"3","ContaCreditada":“99999999”,"TipoPessoaCreditada":"1","CnpjCpfClienteCreditado": “99999999999”,"NomeClienteCreditado":"dev_Ana Paula Cunha Juliao","ValorLancamento":120000.00,"FinlddCli":"10","DataMovimento":"2019-09-30","DataHoraMensagem":"2019-05-31T13:59:57"}'
+
+curl -v --location --request POST 'http://internal-api-k8s-prod-2-superdigit-7u2auc-1034493498.sa-east-1.elb.amazonaws.com/api/v2/teds/00/aprovacao' --header 'Content-Type: application/json' --data-raw '{"ContaCorrenteID":9999999,"Aprovado":true,"ID":00,"LancamentoCreditoId":9357097306,"LancamentoDebitoId":9357097305,"CriadoEm":"0001-01-01T02:00:00Z","CodigoSistemaLegado":"SUPER","NumeroOperacaoSistemaLegado":"","CodigoSituacaoMensagem":"1","StatusId":6,"NumeroControle":"STR20190930190300000","AgenciaDebitada":"0102","TipoContaDebitada":"1","ContaDebitada":"010203","TipoPessoaDebitada":"2","CnpjCpfClienteDebitado": “99999999999”,"NomeClienteDebitado":"Zé da Silva","IspbInstituicaoFinanceiraCreditada":“99999999”,"AgenciaCreditada":null,"TipoContaCreditada":"3","ContaCreditada":“99999999”,"TipoPessoaCreditada":"1","CnpjCpfClienteCreditado": “99999999999”,"NomeClienteCreditado":"dev_Ana Paula Cunha Juliao","ValorLancamento":120000.00,"FinlddCli":"10","DataMovimento":"2019-09-30","DataHoraMensagem":"2019-05-31T13:59:57"}'
+
+
+aws ssm describe-instance-information \
+    --filters "Key=environment,Values=Development"
+
+
+
+aws ssm describe-instance-information --query 'InstanceInformationList[*].[InstanceId,PlatformType,PlatformName,PlatformVersion]' --output text | sort
+
+
+"PlatformType": "Linux",
+            "PlatformName": "Amazon Linux",
+            "PlatformVersion": "2",
+
+
+
+
+curl --location --request POST 'https://api.serasaexperian.com.br/security/iam/v1/user-identities/login?clientId=5bbe3d4e46e0fb000edac0c4' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Basic OTU1NDQ4MFNVUEVSIFBBR0FNRU5UT1M=' \
+--data ''
+
+
+PixRejectedEvents -> 
+PixProcessingEvents ->
+PixDebitClientAccountCreditSystemAccountEvents -> 
+PixCompletedEvents -> 
+PixErrorEvents -> 
+PixScheduleStatusChangeEvent -> Super.Pix.Payment.PixScheduleStatusChangeEvent
+
+
+http://prod-2.superdigital.com/arq-config-server/pagar-contas-ss.yaml
